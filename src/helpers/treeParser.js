@@ -80,16 +80,16 @@ var treeParser = (function () {
         return doParse(next);
     };
 
-    return {
-        parse: function (newTree, newArgs) {
-            tree = newTree;
-            args = newArgs;
-            argumentsIndex = 0;
-            stack = [tree[0]];
-            nodeLinksToIndexes = [];
-            reorderedArgs = [];
+    var parseTree = function (newTree, newArgs) {
+        tree = newTree;
+        args = newArgs;
+        argumentsIndex = 0;
+        stack = [tree[0]];
+        nodeLinksToIndexes = [];
+        reorderedArgs = [];
 
-            return doParse(tree[0]);
-        }
+        return doParse(tree[0]);
     };
+
+    return parseTree;
 }());

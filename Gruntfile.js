@@ -44,7 +44,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: 'src/**/*.js',
-                tasks: ['jshint', 'concat', 'jasmine', 'nodeunit'],
+                tasks: ['jshint', 'concat', /*'jasmine',*/ 'nodeunit'],
                 options: {
                     interrupt: true
                 }
@@ -63,6 +63,6 @@ module.exports = function(grunt) {
 
 
     // Our tasks
-    grunt.registerTask('test', ['jshint', 'concat', 'uglify', 'jasmine', 'nodeunit']);
+    grunt.registerTask('test', ['jshint', 'concat', 'uglify'/*, 'jasmine'*/, 'nodeunit']);
     grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
 };
