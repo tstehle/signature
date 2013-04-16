@@ -23,6 +23,31 @@ exports.testScoping = function(test){
     test.done();
 };
 
+exports.testNegator = function(test){
+    var myFunction = signature.createHandler({
+        responders: {
+            "string": function(str) {
+                return "string - " + str;
+            },
+            "!string": function(notStr) {
+                return "!string - " + notStr;
+            }
+        }
+    });
+
+    test.strictEqual(
+        myFunction("test"),
+        "string - test"
+    );
+
+    test.strictEqual(
+        myFunction(101),
+        "!string - 101"
+    );
+
+    test.done();
+};
+
 
 exports.testVariousParsing = function(test){
     var myFunction = signature.createHandler({

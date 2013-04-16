@@ -1,11 +1,14 @@
 // TODO: case where no arguments must match any number of optional params
 // TODO: make creation faster by only having all signature() objects not redefine its private methods when created (like they don't redefine their parser); And take treeParser out of the global scope.
 
+// TODO: "!string" selector
+
 // TODO: order matters, so must use an array of key/value pairs? Messy notation:
 // [{"string": function () {}}, "number", function () {}, {}]
 // Alternative:
 // addHandler("string", function () {}).and("number", function () {})
 
+//TODO: test if wrapping the matcher in a not() function in the expressionParser is not faster than doing a !matcherResult in treeParser
 
 /*
     A library to grant overriding capabilities to JavaScript functions.
@@ -24,7 +27,7 @@
             reorderedArgs = doArgumentsMatchExpression(args, expression, parsedExpressions);
 
             if (typeof reorderedArgs === "object") {            //WHAT? not "array"??? BUGBUG
-                console.log(reorderedArgs);
+//console.log(reorderedArgs);
                 break;
             } else {
                 reorderedArgs = [];            //ugly, but apply() demands and array

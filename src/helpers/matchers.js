@@ -17,16 +17,19 @@ var matchers = (function () {
 
     // Signature comes with several predefined matchers
     var builtinMatchers = {
-        number: function(input) {
+        'object': function (input) {
+            return (typeof input === "object");
+        },
+        number: function (input) {
             return (typeof input === "number");
         },
-        string: function(input) {
+        string: function (input) {
             return (typeof input === "string");
         },
-        any: function(input) {
+        any: function (input) {
             return (typeof input !== "undefined" && input !== null);
         },
-        'function': function(input) {
+        'function': function (input) {
             return (typeof input === "function");
         }
     };

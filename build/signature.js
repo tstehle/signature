@@ -31,6 +31,7 @@ var expressionParser = (function () {
             trimmedExpressionElement = trim(expressionElements[i]);
             parsedExpression[i] = {};
 
+            // Check for []
             if ( trimmedExpressionElement.length >= 3 &&
                 trimmedExpressionElement.charAt(0) === "[" &&
                 trimmedExpressionElement.charAt( trimmedExpressionElement.length - 1 ) === "]") {
@@ -40,6 +41,15 @@ var expressionParser = (function () {
             } else {
                 parsedExpression[i].optional = false;
             }
+
+            // Check for !
+            if (trimmedExpressionElement.charAt(0) === "!") {
+                trimmedExpressionElement = trimmedExpressionElement.substring(1, trimmedExpressionElement.length);
+                parsedExpression[i].negator = true;
+            } else {
+                parsedExpression[i].negator = false;
+            }
+
 
             parsedExpression[i].index = i;
             parsedExpression[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
@@ -72,8 +82,8 @@ var expressionParser = (function () {
         // Last node is always an end node
         parsedExpression[i].isEndNode = true;
 
-        console.log("$$$$$ PARSED EXPRESSION $$$$$");
-        console.log(parsedExpression);
+console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
+console.log(parsedExpression);
         return parsedExpression;
     };
 
@@ -102,16 +112,19 @@ var matchers = (function () {
 
     // Signature comes with several predefined matchers
     var builtinMatchers = {
-        number: function(input) {
+        'object': function (input) {
+            return (typeof input === "object");
+        },
+        number: function (input) {
             return (typeof input === "number");
         },
-        string: function(input) {
+        string: function (input) {
             return (typeof input === "string");
         },
-        any: function(input) {
+        any: function (input) {
             return (typeof input !== "undefined" && input !== null);
         },
-        'function': function(input) {
+        'function': function (input) {
             return (typeof input === "function");
         }
     };
@@ -141,11 +154,16 @@ var treeParser = (function () {
             nodeLinksToIndexes[node.index] = 0;            //init index for node
         }
 
-        if (node.matcher(args[argumentsIndex])) {
-            console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- PASS");
+        var matcherResult = node.matcher(args[argumentsIndex]);
+        if (node.negator) {
+            matcherResult = !matcherResult;
+        }
+
+        if (matcherResult) {
+//console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- PASS");
             return nextNode(node);
         } else {
-            console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- FAIL");
+//console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- FAIL");
             return backtrack(node);
         }
     };
@@ -182,8 +200,8 @@ var treeParser = (function () {
         reorderedArgs[node.index] = undefined;        // the arg may have been set before so we remove it
 
         var previousNode = stack[stack.length - 1];
-        console.log("*/*/*/ BACKTRACKING TO PREVIOUS NODE:");
-        console.log(previousNode);
+//console.log("*/*/*/ BACKTRACKING TO PREVIOUS NODE:");
+//console.log(previousNode);
 
         if (!previousNode) {
             startingNodesIndex++;
@@ -210,8 +228,8 @@ var treeParser = (function () {
 
         stack.push(next);
 
-        console.log("*/*/*/ FINDING NEXT NODE:");
-        console.log(next);
+//console.log("*/*/*/ FINDING NEXT NODE:");
+//console.log(next);
 
         return doParse(next);
     };
@@ -235,11 +253,14 @@ var treeParser = (function () {
 // TODO: case where no arguments must match any number of optional params
 // TODO: make creation faster by only having all signature() objects not redefine its private methods when created (like they don't redefine their parser); And take treeParser out of the global scope.
 
+// TODO: "!string" selector
+
 // TODO: order matters, so must use an array of key/value pairs? Messy notation:
 // [{"string": function () {}}, "number", function () {}, {}]
 // Alternative:
 // addHandler("string", function () {}).and("number", function () {})
 
+//TODO: test if wrapping the matcher in a not() function in the expressionParser is not faster than doing a !matcherResult in treeParser
 
 /*
     A library to grant overriding capabilities to JavaScript functions.
@@ -258,7 +279,7 @@ var treeParser = (function () {
             reorderedArgs = doArgumentsMatchExpression(args, expression, parsedExpressions);
 
             if (typeof reorderedArgs === "object") {            //WHAT? not "array"??? BUGBUG
-                console.log(reorderedArgs);
+//console.log(reorderedArgs);
                 break;
             } else {
                 reorderedArgs = [];            //ugly, but apply() demands and array

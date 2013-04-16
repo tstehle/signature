@@ -13,11 +13,16 @@ var treeParser = (function () {
             nodeLinksToIndexes[node.index] = 0;            //init index for node
         }
 
-        if (node.matcher(args[argumentsIndex])) {
-            console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- PASS");
+        var matcherResult = node.matcher(args[argumentsIndex]);
+        if (node.negator) {
+            matcherResult = !matcherResult;
+        }
+
+        if (matcherResult) {
+//console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- PASS");
             return nextNode(node);
         } else {
-            console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- FAIL");
+//console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- FAIL");
             return backtrack(node);
         }
     };
@@ -54,8 +59,8 @@ var treeParser = (function () {
         reorderedArgs[node.index] = undefined;        // the arg may have been set before so we remove it
 
         var previousNode = stack[stack.length - 1];
-        console.log("*/*/*/ BACKTRACKING TO PREVIOUS NODE:");
-        console.log(previousNode);
+//console.log("*/*/*/ BACKTRACKING TO PREVIOUS NODE:");
+//console.log(previousNode);
 
         if (!previousNode) {
             startingNodesIndex++;
@@ -82,8 +87,8 @@ var treeParser = (function () {
 
         stack.push(next);
 
-        console.log("*/*/*/ FINDING NEXT NODE:");
-        console.log(next);
+//console.log("*/*/*/ FINDING NEXT NODE:");
+//console.log(next);
 
         return doParse(next);
     };

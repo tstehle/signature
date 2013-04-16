@@ -29,6 +29,7 @@ var expressionParser = (function () {
             trimmedExpressionElement = trim(expressionElements[i]);
             parsedExpression[i] = {};
 
+            // Check for []
             if ( trimmedExpressionElement.length >= 3 &&
                 trimmedExpressionElement.charAt(0) === "[" &&
                 trimmedExpressionElement.charAt( trimmedExpressionElement.length - 1 ) === "]") {
@@ -38,6 +39,15 @@ var expressionParser = (function () {
             } else {
                 parsedExpression[i].optional = false;
             }
+
+            // Check for !
+            if (trimmedExpressionElement.charAt(0) === "!") {
+                trimmedExpressionElement = trimmedExpressionElement.substring(1, trimmedExpressionElement.length);
+                parsedExpression[i].negator = true;
+            } else {
+                parsedExpression[i].negator = false;
+            }
+
 
             parsedExpression[i].index = i;
             parsedExpression[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
@@ -70,8 +80,8 @@ var expressionParser = (function () {
         // Last node is always an end node
         parsedExpression[i].isEndNode = true;
 
-        console.log("$$$$$ PARSED EXPRESSION $$$$$");
-        console.log(parsedExpression);
+console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
+console.log(parsedExpression);
         return parsedExpression;
     };
 
