@@ -1,11 +1,12 @@
-# OS Trash
+# Operating System Trash
 .DS_Store
 Thumbs.db
 
-# Editors files and folders
+# Code Editors' files and folders
 .idea
 *.sublime-project
 *.sublime-workspace
 
 # Folders to ignore
 node_modules
+.grunt
