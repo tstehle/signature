@@ -44,7 +44,7 @@ var expressionParser = (function () {
             parsedExpression[i].index = i;
             parsedExpression[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
             parsedExpression[i].linksTo = [];
-            parsedExpression[i].isStartingNode = isTheCurrentNodeAStartingNode;
+            parsedExpression[i].isStartingNode = isTheCurrentNodeAStartingNode;     // ? DO WE USE THIS ?
 
             if (isTheCurrentNodeAStartingNode) {
                 parsedExpression.startingNodes.push(parsedExpression[i]);
@@ -133,6 +133,8 @@ var treeParser = (function () {
     var nodeLinksToIndexes;
     var args;
     var reorderedArgs = [];
+    var startingNodes;
+    var startingNodesIndex;
 
     var doParse = function (node) {
         if (!nodeLinksToIndexes[node.index]) {
@@ -184,7 +186,13 @@ var treeParser = (function () {
         console.log(previousNode);
 
         if (!previousNode) {
-            return false;
+            startingNodesIndex++;
+            var nextStartingNode = startingNodes[startingNodesIndex];
+            if (nextStartingNode !== undefined) {
+                return doParse(nextStartingNode);
+            } else {
+                return false;
+            }
         }
 
         nodeLinksToIndexes[previousNode.index] += 1;
@@ -212,11 +220,13 @@ var treeParser = (function () {
         tree = newTree;
         args = newArgs;
         argumentsIndex = 0;
-        stack = [tree[0]];
         nodeLinksToIndexes = [];
         reorderedArgs = [];
+        startingNodes = tree.startingNodes;
+        startingNodesIndex = 0;
+        stack = [startingNodes[0]];
 
-        return doParse(tree[0]);
+        return doParse(startingNodes[0]);
     };
 
     return parseTree;
@@ -241,7 +251,7 @@ var treeParser = (function () {
     var noop = function () {};
 
     var findResponder = function (args, responders, parsedExpressions) {
-        var i, responder, reorderedArgs, expression;
+        var responder, reorderedArgs, expression;
 
         for (expression in responders) {    // look through our responders
             responder = responders[expression];
@@ -251,7 +261,7 @@ var treeParser = (function () {
                 console.log(reorderedArgs);
                 break;
             } else {
-                reorderedArgs = [];            //ugly
+                reorderedArgs = [];            //ugly, but apply() demands and array
                 responder = noop;
             }
         }

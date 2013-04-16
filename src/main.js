@@ -17,7 +17,7 @@
     var noop = function () {};
 
     var findResponder = function (args, responders, parsedExpressions) {
-        var i, responder, reorderedArgs, expression;
+        var responder, reorderedArgs, expression;
 
         for (expression in responders) {    // look through our responders
             responder = responders[expression];
@@ -27,7 +27,7 @@
                 console.log(reorderedArgs);
                 break;
             } else {
-                reorderedArgs = [];            //ugly
+                reorderedArgs = [];            //ugly, but apply() demands and array
                 responder = noop;
             }
         }

@@ -106,13 +106,31 @@ exports.testVariousParsing = function(test){
 exports.testOptionalsAtTheStart = function(test){
     var myFunction = signature.createHandler({
         responders: {
-            "[string], [any], number": function (str, any, num) {
-                return [str, any, num];
+            "[string], [function], number": function (str, funct, num) {
+                return [str, typeof funct, num];
             }
         }
     });
 
-    //TODO
+    test.deepEqual(
+        myFunction("d", 50),
+        ["d", "undefined", 50]
+    );
+
+    test.deepEqual(
+        myFunction("d", function () {}, 40),
+        ["d", "function", 40]
+    );
+
+    test.deepEqual(
+        myFunction(50),
+        [undefined, "undefined", 50]
+    );
+
+    test.deepEqual(
+        myFunction(function () {}, 50),
+        [undefined, "function", 50]
+    );
 
     test.done();
 };
@@ -133,12 +151,12 @@ exports.testOptionalsAtTheEnd = function(test){
     );
 
     test.deepEqual(
-        myFunction(50, "d", function() {}),
+        myFunction(50, "d", function () {}),
         [50, "d", "function"]
     );
 
     test.deepEqual(
-        myFunction(50, function() {}),
+        myFunction(50, function () {}),
         [50, undefined, "function"]
     );
 

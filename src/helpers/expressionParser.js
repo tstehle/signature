@@ -42,7 +42,7 @@ var expressionParser = (function () {
             parsedExpression[i].index = i;
             parsedExpression[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
             parsedExpression[i].linksTo = [];
-            parsedExpression[i].isStartingNode = isTheCurrentNodeAStartingNode;
+            parsedExpression[i].isStartingNode = isTheCurrentNodeAStartingNode;     // ? DO WE USE THIS ?
 
             if (isTheCurrentNodeAStartingNode) {
                 parsedExpression.startingNodes.push(parsedExpression[i]);
