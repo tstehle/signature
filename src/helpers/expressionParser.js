@@ -25,11 +25,18 @@ var expressionParser = (function () {
             i;
 
         parsedExpression.data = [];
-        parsedExpression.startingNodes = []; // meh, return an object, not this mess
+        parsedExpression.startingNodes = [];
         parsedExpression.responder = responder;
 
         for (i = 0; i < expressionElements.length; i++) {
             trimmedExpressionElement = trim(expressionElements[i]);
+
+            //
+            if (trimmedExpressionElement === '') {
+                parsedExpression.hasEmptyPath = true;
+                return parsedExpression;
+            }
+
             parsedExpression.data[i] = {};
 
             // Check for []
@@ -82,6 +89,12 @@ var expressionParser = (function () {
 
         // Last node is always an end node
         parsedExpression.data[i].isEndNode = true;
+
+        // Detect empty paths
+        if (parsedExpression.data[0].isEndNode && parsedExpression.data[0].isStartingNode && parsedExpression.data[0].optional) {
+            parsedExpression.hasEmptyPath = true;
+
+        }
 
 console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
 console.log(parsedExpression);

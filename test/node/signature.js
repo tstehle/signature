@@ -81,6 +81,15 @@ exports.testVariousParsing = function(test){
         }
     });
 
+
+    test.strictEqual(
+        myFunction(),
+        "optional number undefined"
+    );
+
+    // BUGBUG fails because the expression parser doesn't build an object that supports empty paths.
+    // May be solved by checking if we're at an end node
+
     test.strictEqual(
         myFunction(111),
         "optional number 111"
@@ -229,25 +238,69 @@ exports.testjQueryLookalike = function(test){
 };
 
 
-// BUGBUG: Probably buggy because there are several end nodes,
-// and our parsed State Machine doesn't represent that.
-// number, [string], [function]
-// Solution: mark end nodes. If we have no more args and are at an end node, we exit.
-// With success if match or if undefined vs optional
-/*
+exports.testEmptyPaths = function(test){
+    var myFunction = signature.createHandler({
+        responders: {
+            "[number]": function(optionalNumber) {
+                return "optional number " + optionalNumber;
+            }
+        }
+    });
 
-*/
+    test.strictEqual(
+        myFunction(),
+        "optional number undefined"
+    );
 
-// BUGBUG: similar bug with starting node
-// [string], [any], number
-// They're all potential starting nodes
-// Yet the state machine that I build only knows of one entry point.
-// Solution: have a list of entry points, and if we can't backtrack further we use another entry point.
-// Maybe we could make it the first node...
-// It would also be an exit point if everything is optional.
-// its associated matcher would be any? Must be careful to with the indexes of the arguments and such though...
+    test.strictEqual(
+        myFunction(1),
+        "optional number 1"
+    );
+
+    test.done();
+};
 
 
+exports.testEmptyPaths2 = function(test){
+    var myFunction = signature.createHandler({
+        responders: {
+            "[number], [number]": function(optionalNumber1, optionalNumber2) {
+                return "optional numbers " + optionalNumber1 + " " + optionalNumber2;
+            }
+        }
+    });
 
-//myFunction();        // BUGBUG fails because the expression parser doesn't build an object that supports empty paths.
-// May be solved by checking if we're at an end node
+    test.strictEqual(
+        myFunction(),
+        "optional numbers undefined undefined"
+    );
+
+    test.strictEqual(
+        myFunction(1),
+        "optional numbers 1 undefined"
+    );
+
+    test.strictEqual(
+        myFunction(1, 2),
+        "optional numbers 1 2"
+    );
+
+    test.done();
+};
+
+exports.testEmptyExpression= function(test){
+    var myFunction = signature.createHandler({
+        responders: {
+            "": function() {
+                return "no arguments";
+            }
+        }
+    });
+
+    test.strictEqual(
+        myFunction(),
+        "no arguments"
+    );
+
+    test.done();
+};

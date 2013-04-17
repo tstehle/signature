@@ -13,7 +13,8 @@ module.exports = function(grunt) {
             }
         },
         nodeunit: {
-            all: ['test/node/*.js']
+            complete: ['test/node/signature.js'],
+            quick: ['test/node/quick.js']
         },
         jasmine: {
             pivotal: {
@@ -44,7 +45,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: 'src/**/*.js',
-                tasks: ['jshint', 'concat', 'uglify',/*'jasmine',*/ 'nodeunit'],
+                tasks: ['jshint', 'concat', 'uglify',/*'jasmine',*/ 'nodeunit:complete'],
                 options: {
                     interrupt: true
                 }
@@ -63,6 +64,7 @@ module.exports = function(grunt) {
 
 
     // Our tasks
-    grunt.registerTask('test', ['jshint', 'concat', 'uglify'/*, 'jasmine'*/, 'nodeunit']);
+    grunt.registerTask('test', ['jshint', 'concat', 'uglify'/*, 'jasmine'*/, 'nodeunit:complete']);
+    grunt.registerTask('quick', ['jshint', 'concat', 'uglify', 'nodeunit:quick']);
     grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
 };

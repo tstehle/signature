@@ -5,6 +5,58 @@ var signature = require("../build/signature.js");
 var suite = new Benchmark.Suite;
 
 
+/*
+var basicFunctionWithoutSignature = function(object, fn) {
+    if (object === "object" && typeof fn === "function") {
+        return [object, fn];
+    } else {
+        return undefined;
+    }
+};
+
+
+var responder = function (object, fn) {
+    if (object === "object" && typeof fn === "function") {
+        return [object, fn];
+    } else {
+        return undefined;
+    }
+};
+
+var basicFunctionWithMockupSignature = function(object, fn) {
+
+    return responder.apply();
+
+};
+
+var basicFunctionWithSignature = signature.createHandler({
+    responders: {
+        "object, function": function(object, fn) {
+            return [object, fn];
+        }
+    }
+});
+
+// add tests
+suite.add('basicFunctionWithMockupSignature', function() {
+        basicFunctionWithMockupSignature("types", function () {});
+    })
+    .add('basicFunctionWithoutSignature', function() {
+        basicFunctionWithoutSignature("types", function () {});
+    })
+// add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + _.pluck(this.filter('fastest'), 'name'));
+    })
+// run async
+    .run({ 'async': true });
+
+*/
+
+
 var $ = {
     on: function( types, selector, data, fn ) {
         var type;
@@ -65,13 +117,6 @@ var $withSignature = {
         }
     })
 };
-
-
-
-
-
-
-
 
 
 // add tests
