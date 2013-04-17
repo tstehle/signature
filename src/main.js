@@ -19,12 +19,13 @@
 
     var noop = function () {};
 
-    var findResponder = function (args, responders, parsedExpressions) {
-        var responder, reorderedArgs, expression;
+    var findResponder = function (args, parsedExpressions) {
+        var responder, reorderedArgs, parsedExpression, i;
 
-        for (expression in responders) {    // look through our responders
-            responder = responders[expression];
-            reorderedArgs = doArgumentsMatchExpression(args, expression, parsedExpressions);
+        for (i = 0; i < parsedExpressions.length; i++) {    // look through our responders
+            parsedExpression = parsedExpressions[i];
+            responder = parsedExpression.responder;
+            reorderedArgs = treeParser(parsedExpression, args); //call it doArgumentsMatchExpression()
 
             if (typeof reorderedArgs === "object") {            //WHAT? not "array"??? BUGBUG
 //console.log(reorderedArgs);
@@ -41,12 +42,6 @@
         };
     };
 
-    var doArgumentsMatchExpression = function(args, expression, parsedExpressions) {
-        var cachedExpressionTree = parsedExpressions[expression];
-        return treeParser(cachedExpressionTree, args);
-    };
-
-
     var createHandler = function(userOptions) {
         //
         //var matchers = createMatchers(userOptions.matchers); // TODO, though maybe do it in the expressionParser
@@ -57,7 +52,7 @@
         // Our handler centralises all calls, and finds the proper Responder function to call based on the arguments
         var handler = function () {
             // Find the correct Responder (or noop if no match), as well as the reordered arguments
-            var responderData = findResponder(arguments, userOptions.responders, parsedExpressions);
+            var responderData = findResponder(arguments, parsedExpressions);
 
             // Call the Responder in the proper context and pass along its returned value
             return responderData.responder.apply(this, responderData.args);

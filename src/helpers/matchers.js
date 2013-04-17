@@ -17,6 +17,26 @@ var matchers = (function () {
 
     // Signature comes with several predefined matchers
     var builtinMatchers = {
+        'true': function (input) {
+            return (input === true);
+        },
+        'false': function (input) {
+            return (input === false);
+        },
+        'truthy': function (input) {
+            if (input) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        'falsy': function (input) {
+            if (input) {
+                return false;
+            } else {
+                return true;
+            }
+        },
         'object': function (input) {
             return (typeof input === "object");
         },
@@ -36,6 +56,7 @@ var matchers = (function () {
 
     // Add aliases
     builtinMatchers["*"] = builtinMatchers.any;
+    builtinMatchers.falsey = builtinMatchers.falsy;
 
     return {
         findByName: findByName

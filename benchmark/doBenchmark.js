@@ -54,10 +54,10 @@ var $withSignature = {
     on: signature.createHandler({
         responders: {
             "!object, [string], [any], function": function(types, selector, data, fn) {
-                if ( fn === false ) {
-                    fn = function () {return false;};
-                }
                 return [types, selector, data, fn];
+            },
+            "!object, [string], [any], false": function(types, selector, data) {
+                return [types, selector, data, function() {return false;}];
             },
             "object, [string], [any]": function(types, selector, data) {
                 //loop

@@ -1,7 +1,6 @@
 var treeParser = (function () {
     var stack;
     var argumentsIndex;
-    var tree;
     var nodeLinksToIndexes;
     var args;
     var reorderedArgs = [];
@@ -94,12 +93,11 @@ var treeParser = (function () {
     };
 
     var parseTree = function (newTree, newArgs) {
-        tree = newTree;
         args = newArgs;
         argumentsIndex = 0;
         nodeLinksToIndexes = [];
         reorderedArgs = [];
-        startingNodes = tree.startingNodes;
+        startingNodes = newTree.startingNodes;
         startingNodesIndex = 0;
         stack = [startingNodes[0]];
 

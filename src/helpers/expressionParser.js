@@ -6,28 +6,31 @@ var expressionParser = (function () {
 
 
     var parseExpressions = function (expressions, userDefinedMatchers) {
-        var parsedExpressions = {};
+        var parsedExpressions = [];
         var expression;
 
         for (expression in expressions) {
-            parsedExpressions[expression] = parseExpression(expression, userDefinedMatchers);
+            var responder = expressions[expression];
+            parsedExpressions.push(parseExpression(expression, responder, userDefinedMatchers));
         }
 
         return parsedExpressions;
     };
 
-    var parseExpression = function (expression, userDefinedMatchers) {
+    var parseExpression = function (expression, responder, userDefinedMatchers) {
         var expressionElements = expression.split(','),
             trimmedExpressionElement,
             parsedExpression = [],
             isTheCurrentNodeAStartingNode = true,
             i;
 
+        parsedExpression.data = [];
         parsedExpression.startingNodes = []; // meh, return an object, not this mess
+        parsedExpression.responder = responder;
 
         for (i = 0; i < expressionElements.length; i++) {
             trimmedExpressionElement = trim(expressionElements[i]);
-            parsedExpression[i] = {};
+            parsedExpression.data[i] = {};
 
             // Check for []
             if ( trimmedExpressionElement.length >= 3 &&
@@ -35,50 +38,50 @@ var expressionParser = (function () {
                 trimmedExpressionElement.charAt( trimmedExpressionElement.length - 1 ) === "]") {
 
                 trimmedExpressionElement = trimmedExpressionElement.substring(1, trimmedExpressionElement.length - 1);
-                parsedExpression[i].optional = true;
+                parsedExpression.data[i].optional = true;
             } else {
-                parsedExpression[i].optional = false;
+                parsedExpression.data[i].optional = false;
             }
 
             // Check for !
             if (trimmedExpressionElement.charAt(0) === "!") {
                 trimmedExpressionElement = trimmedExpressionElement.substring(1, trimmedExpressionElement.length);
-                parsedExpression[i].negator = true;
+                parsedExpression.data[i].negator = true;
             } else {
-                parsedExpression[i].negator = false;
+                parsedExpression.data[i].negator = false;
             }
 
-
-            parsedExpression[i].index = i;
-            parsedExpression[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
-            parsedExpression[i].linksTo = [];
-            parsedExpression[i].isStartingNode = isTheCurrentNodeAStartingNode;     // ? DO WE USE THIS ?
+            // Build
+            parsedExpression.data[i].index = i;
+            parsedExpression.data[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
+            parsedExpression.data[i].linksTo = [];
+            parsedExpression.data[i].isStartingNode = isTheCurrentNodeAStartingNode;     // ? DO WE USE THIS ?
 
             if (isTheCurrentNodeAStartingNode) {
-                parsedExpression.startingNodes.push(parsedExpression[i]);
+                parsedExpression.startingNodes.push(parsedExpression.data[i]);
             }
 
-            if (!(isTheCurrentNodeAStartingNode && parsedExpression[i].optional)) {
+            if (!(isTheCurrentNodeAStartingNode && parsedExpression.data[i].optional)) {
                 isTheCurrentNodeAStartingNode = false;
             }
         }//TODO: handle empty string in trimmedExpressionElement
 
-        for (i = 0; i < parsedExpression.length - 1; i++) {
+        for (i = 0; i < parsedExpression.data.length - 1; i++) {
             var allChildrenWereOptional = true;
-            for (var j = i + 1; j < parsedExpression.length; j++) {
-                parsedExpression[i].linksTo.push(parsedExpression[j]);
+            for (var j = i + 1; j < parsedExpression.data.length; j++) {
+                parsedExpression.data[i].linksTo.push(parsedExpression.data[j]);
 
-                if (!parsedExpression[j].optional) {
+                if (!parsedExpression.data[j].optional) {
                     allChildrenWereOptional = false;
                     break;
                 }
             }
 
-            parsedExpression[i].isEndNode = allChildrenWereOptional;
+            parsedExpression.data[i].isEndNode = allChildrenWereOptional;
         }
 
         // Last node is always an end node
-        parsedExpression[i].isEndNode = true;
+        parsedExpression.data[i].isEndNode = true;
 
 console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
 console.log(parsedExpression);
