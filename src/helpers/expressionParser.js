@@ -93,11 +93,10 @@ var expressionParser = (function () {
         // Detect empty paths
         if (parsedExpression.data[0].isEndNode && parsedExpression.data[0].isStartingNode && parsedExpression.data[0].optional) {
             parsedExpression.hasEmptyPath = true;
-
         }
 
-console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
-console.log(parsedExpression);
+//console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
+//console.log(parsedExpression);
         return parsedExpression;
     };
 

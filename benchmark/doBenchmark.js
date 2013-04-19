@@ -1,8 +1,75 @@
 var Benchmark = require('benchmark');
 var _ = require('lodash');
+var signature_0_0_0 = require("../build/old/signature-0.0.0.js");
+//var signature_0_0_1 = require("../build/old/signature-0.0.1.js");
 var signature = require("../build/signature.js");
 
-var suite = new Benchmark.Suite;
+var suite = new Benchmark.Suite('Compare speed improvements between versions: TreeParser', {
+    'onStart': function() {
+        testSignature_0_0_0 = {
+            on: signature_0_0_0.createHandler({
+                responders: {
+                    "!object, [string], [any], function": function(types, selector, data, fn) {
+                        return [types, selector, data, fn];
+                    },
+                    "!object, [string], [any], false": function(types, selector, data) {
+                        return [types, selector, data, function() {return false;}];
+                    },
+                    "object, [string], [any]": function(types, selector, data) {
+                        //loop
+                    }
+                }
+            })
+        };
+
+        testSignature = {
+            on: signature.createHandler({
+                responders: {
+                    "!object, [string], [any], function": function(types, selector, data, fn) {
+                        return [types, selector, data, fn];
+                    },
+                    "!object, [string], [any], false": function(types, selector, data) {
+                        return [types, selector, data, function() {return false;}];
+                    },
+                    "object, [string], [any]": function(types, selector, data) {
+                        //loop
+                    }
+                }
+            })
+        };
+    }
+});
+
+
+
+suite.add('signature_0_0_0', function() {
+        testSignature_0_0_0.on("types", function () {});
+    })
+    .add('signature latest', function() {
+        testSignature.on("types", function () {});
+    })
+// add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + _.pluck(this.filter('fastest'), 'name'));
+    })
+// run async
+    .run({ 'async': true });
+
+
+
+// Compare speed improvements between versions: TreeBuilder
+
+
+
+
+
+
+
+
+
 
 
 /*
@@ -56,6 +123,9 @@ suite.add('basicFunctionWithMockupSignature', function() {
 
 */
 
+
+
+/*
 
 var $ = {
     on: function( types, selector, data, fn ) {
@@ -135,3 +205,5 @@ suite.add('$.on() Without Signature', function() {
 })
 // run async
 .run({ 'async': true });
+
+    */

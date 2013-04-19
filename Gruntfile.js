@@ -34,18 +34,25 @@ module.exports = function(grunt) {
                 banner: '(function () {\n\n',
                 footer: '\n}());'
             },
-            dist: {
+            latest: {
                 src: [
                     'src/helpers/*.js',
                     'src/main.js'
                 ],
-                dest: 'build/signature.js'
+                dest: 'build/<%= pkg.name %>.js'
+            },
+            archive: {
+                src: [
+                    'src/helpers/*.js',
+                    'src/main.js'
+                ],
+                dest: 'build/old/<%= pkg.name %>-<%= pkg.version %>.js'
             }
         },
         watch: {
             scripts: {
                 files: 'src/**/*.js',
-                tasks: ['jshint', 'concat', 'uglify',/*'jasmine',*/ 'nodeunit:complete'],
+                tasks: ['jshint', 'concat', 'uglify',/*'jasmine',*/ 'nodeunit:quick'],
                 options: {
                     interrupt: true
                 }

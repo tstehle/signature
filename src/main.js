@@ -1,5 +1,7 @@
 // TODO: case where no arguments must match any number of optional params
 // TODO: make creation faster by only having all signature() objects not redefine its private methods when created (like they don't redefine their parser); And take treeParser out of the global scope.
+// TODO: add ...
+// TODO: a way to catch all, maybe "[...]" will match anything (detect that special case and don't do any check at all?)
 
 // TODO: order matters, so must use an array of key/value pairs? Messy notation:
 // [{"string": function () {}}, "number", function () {}, {}]
