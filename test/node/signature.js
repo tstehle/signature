@@ -5,11 +5,9 @@ var signature = require("../../build/signature.js");
 exports.testScoping = function(test){
     var myObject = {
         objectVar: "I am an object var, context is good",
-        myFunction: signature.createHandler({
-            responders: {
-                "string": function(str) {
-                    return this.objectVar + " - " + str;
-                }
+        myFunction: signature({
+            "string": function(str) {
+                return this.objectVar + " - " + str;
             }
         })
     };
@@ -24,14 +22,12 @@ exports.testScoping = function(test){
 };
 
 exports.testNegator = function(test){
-    var myFunction = signature.createHandler({
-        responders: {
-            "string": function(str) {
-                return "string - " + str;
-            },
-            "!string": function(notStr) {
-                return "!string - " + notStr;
-            }
+    var myFunction = signature({
+        "string": function(str) {
+            return "string - " + str;
+        },
+        "!string": function(notStr) {
+            return "!string - " + notStr;
         }
     });
 
@@ -50,34 +46,31 @@ exports.testNegator = function(test){
 
 
 exports.testVariousParsing = function(test){
-    var myFunction = signature.createHandler({
-        matchers: {
-            isNegative: function (value) {
-                return (value < 0);
-            }
+    var myFunction = signature({
+        "isNegative": function (negativeNumber) {
+            return "negative number " + negativeNumber;
         },
-        responders: {
-            "isNegative": function (negativeNumber) {
-                return "negative number " + negativeNumber;
-            },
-            "[number]": function(optionalNumber) {
-                return "optional number " + optionalNumber;
-            },
-            "function": function(funct) {
-                return funct.apply();
-            },
-            "string": function(str) {
-                return str;
-            },
-            "number, number": function(number1, number2) {
-                return "multiply 2 numbers: " + number1*number2;
-            },
-            "number, number, number": function(number1, number2, number3) {
-                return "multiply 3 numbers: " + number1*number2*number3;
-            },
-            "string, number": function(str, number) {
-                return str + number;
-            }
+        "[number]": function(optionalNumber) {
+            return "optional number " + optionalNumber;
+        },
+        "function": function(funct) {
+            return funct.apply();
+        },
+        "string": function(str) {
+            return str;
+        },
+        "number, number": function(number1, number2) {
+            return "multiply 2 numbers: " + number1*number2;
+        },
+        "number, number, number": function(number1, number2, number3) {
+            return "multiply 3 numbers: " + number1*number2*number3;
+        },
+        "string, number": function(str, number) {
+            return str + number;
+        }
+    }, {
+        isNegative: function (value) {
+            return (value < 0);
         }
     });
 
@@ -138,11 +131,9 @@ exports.testVariousParsing = function(test){
 
 
 exports.testOptionalsAtTheStart = function(test){
-    var myFunction = signature.createHandler({
-        responders: {
-            "[string], [function], number": function (str, funct, num) {
-                return [str, typeof funct, num];
-            }
+    var myFunction = signature({
+        "[string], [function], number": function (str, funct, num) {
+            return [str, typeof funct, num];
         }
     });
 
@@ -170,12 +161,10 @@ exports.testOptionalsAtTheStart = function(test){
 };
 
 exports.testOptionalsAtTheEnd = function(test){
-    var myFunction = signature.createHandler({
-        responders: {
-            "number, [string], [function]": function(num, str, funct) {
-                //optionals at the end
-                return [num, str, typeof funct];
-            }
+    var myFunction = signature({
+        "number, [string], [function]": function(num, str, funct) {
+            //optionals at the end
+            return [num, str, typeof funct];
         }
     });
 
@@ -200,16 +189,14 @@ exports.testOptionalsAtTheEnd = function(test){
 
 exports.testjQueryLookalike = function(test){
     var $ = {
-        on: signature.createHandler({
-            responders: {
-                "any, [any], [any], function": function(events, selector, data, callback) {            //must be first or no match
-                    //console.log("******** events, [selector], [data], function ********");
-                    return [events, selector, data, typeof callback];
-                },
-                "any, [any], [any]": function(events, selector, data) {
-                    //console.log("******** events, [selector], [data] ********");
-                    return [events, selector, data];
-                }
+        on: signature({
+            "any, [any], [any], function": function(events, selector, data, callback) {            //must be first or no match
+                //console.log("******** events, [selector], [data], function ********");
+                return [events, selector, data, typeof callback];
+            },
+            "any, [any], [any]": function(events, selector, data) {
+                //console.log("******** events, [selector], [data] ********");
+                return [events, selector, data];
             }
         })
     };
@@ -239,11 +226,9 @@ exports.testjQueryLookalike = function(test){
 
 
 exports.testEmptyPaths = function(test){
-    var myFunction = signature.createHandler({
-        responders: {
-            "[number]": function(optionalNumber) {
-                return "optional number " + optionalNumber;
-            }
+    var myFunction = signature({
+        "[number]": function(optionalNumber) {
+            return "optional number " + optionalNumber;
         }
     });
 
@@ -262,11 +247,9 @@ exports.testEmptyPaths = function(test){
 
 
 exports.testEmptyPaths2 = function(test){
-    var myFunction = signature.createHandler({
-        responders: {
-            "[number], [number]": function(optionalNumber1, optionalNumber2) {
-                return "optional numbers " + optionalNumber1 + " " + optionalNumber2;
-            }
+    var myFunction = signature({
+        "[number], [number]": function(optionalNumber1, optionalNumber2) {
+            return "optional numbers " + optionalNumber1 + " " + optionalNumber2;
         }
     });
 
@@ -289,11 +272,9 @@ exports.testEmptyPaths2 = function(test){
 };
 
 exports.testEmptyExpression= function(test){
-    var myFunction = signature.createHandler({
-        responders: {
-            "": function() {
-                return "no arguments";
-            }
+    var myFunction = signature({
+        "": function() {
+            return "no arguments";
         }
     });
 

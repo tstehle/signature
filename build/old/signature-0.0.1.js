@@ -1,5 +1,7 @@
 (function () {
 
+    var version = "0.0.1";
+
 var expressionParser = (function () {
 
     var trim = function (string) {
@@ -107,6 +109,16 @@ var expressionParser = (function () {
 
 
 
+
+var parseExpression = (function () {
+
+    var generateFunctionCode = function (expressions, userDefinedMatchers) {
+
+
+    };
+
+    return generateFunctionCode;
+}());
 
 var matchers = (function () {
 
@@ -304,16 +316,16 @@ var treeParser = (function () {
 /*
     A library to grant overriding capabilities to JavaScript functions.
     All helpers are included here on Build.
- */
+*/
 
-    var version = "0.0.0";
+    var root = this;
 
-    var createHandler = function(userOptions) {
+    var signature = function(responders, matchers) {
         //
         //var matchers = createMatchers(userOptions.matchers); // TODO, though maybe do it in the expressionParser
 
         // Generate Trees out of the Expressions (eg. "number, string") defined by the user.
-        var parsedExpressions = expressionParser(userOptions.responders, userOptions.matchers);
+        var parsedExpressions = expressionParser(responders, matchers);
 
         // Handler centralises all calls, and finds the proper Responder function to call based on the arguments
         var handler = function () {
@@ -337,19 +349,14 @@ var treeParser = (function () {
         return handler;
     };
 
-
-
-    //separate to : initialSetup.js
-
-    var root = this;
-
-    var signature;
+    // Taken from underscore.js
     if (typeof exports !== 'undefined') {
-        signature = exports;
+        if (typeof module !== 'undefined' && module.exports) {
+            exports = module.exports = signature;
+        }
+        exports.signature = signature;
     } else {
-        signature = root.signature = {};
+        root.signature = signature;
     }
-
-    signature.createHandler = createHandler;
 
 }());

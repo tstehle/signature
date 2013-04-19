@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         concat: {
             options: {
                 separator: '\n\n',
-                banner: '(function () {\n\n',
+                banner: '(function () {\n\n    var version = "<%= pkg.version %>";\n\n',
                 footer: '\n}());'
             },
             latest: {
