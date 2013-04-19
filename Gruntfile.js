@@ -25,8 +25,11 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            all: ['Gruntfile.js', 'test/**/*.js', 'src/**/*.js'],
-            jshintrc: 'src/.jshintrc'
+            beforeconcat: ['Gruntfile.js', 'test/**/*.js', 'src/**/*.js'],
+            afterconcat: ['build/<%= pkg.name %>.js'],
+            options: {
+                evil: true
+            }
         },
         concat: {
             options: {
@@ -52,7 +55,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: 'src/**/*.js',
-                tasks: ['jshint', 'concat', 'uglify',/*'jasmine',*/ 'nodeunit:quick'],
+                tasks: ['jshint:beforeconcat', 'concat', 'jshint:afterconcat', 'uglify',/*'jasmine',*/ 'nodeunit:quick'],
                 options: {
                     interrupt: true
                 }
@@ -71,7 +74,7 @@ module.exports = function(grunt) {
 
 
     // Our tasks
-    grunt.registerTask('test', ['jshint', 'concat', 'uglify'/*, 'jasmine'*/, 'nodeunit:complete']);
-    grunt.registerTask('quick', ['jshint', 'concat', 'uglify', 'nodeunit:quick']);
-    grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+    grunt.registerTask('test', ['jshint:beforeconcat', 'concat', 'jshint:afterconcat', 'uglify'/*, 'jasmine'*/, 'nodeunit:complete']);
+    grunt.registerTask('quick', ['jshint:beforeconcat', 'concat', 'jshint:afterconcat', 'uglify', 'nodeunit:quick']);
+    grunt.registerTask('default', ['jshint:beforeconcat', 'concat', 'jshint:afterconcat', 'uglify']);
 };
