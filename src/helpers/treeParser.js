@@ -1,24 +1,21 @@
 var treeParser = (function () {
 
-    var doParse = function (currentNode, args, argsIndex) {
-        var didMatch;
+    var doParse = function (currentNode, args, argsIndex, ellipsesIndex) {
 
-        if (argsIndex !== -1) {         //TODO: damn that's ugly: make it so matcher already knows to invert the result
-            didMatch = currentNode.matcher(args[argsIndex]);
-            if (currentNode.negator) {
-                didMatch = !didMatch;
-            }
-        }
-
-        if (argsIndex === -1 || didMatch) {
-            var reorderedArguments;
+        if (argsIndex === -1 || currentNode.matcher(args[argsIndex])) {
+            var reorderedArguments, i;
 
             // If we're at the end of the args, we better be in an endNode
             if(args.length === argsIndex + 1) {
                 if (currentNode.isEndNode) {
-                    // Reorder arguments on the way down
+                    // We found the correct path: now reorder arguments on the way down
                     reorderedArguments = [];
-                    reorderedArguments[currentNode.index] = args[argsIndex];
+                    if (currentNode.infinite) {
+                        reorderedArguments[currentNode.index] = [];
+                        reorderedArguments[currentNode.index][ellipsesIndex] = args[argsIndex];
+                    } else {
+                        reorderedArguments[currentNode.index] = args[argsIndex];
+                    }
                     return reorderedArguments;
                 } else {
                     // Too few arguments to fit: backtrack
@@ -26,12 +23,30 @@ var treeParser = (function () {
                 }
             }
 
-            for (var i = 0; i < currentNode.linksTo.length; i++) {
+            // Go through the children until we either find a match or run out of children
+            for (i = 0; i < currentNode.linksTo.length; i++) {
                 var nextNode = currentNode.linksTo[i];
-                reorderedArguments = doParse(nextNode, args, argsIndex+1);
-                if (reorderedArguments){
+
+                // Keep track of how many nodes we go through parsing a selector with an "..."
+                var newEllipsesIndex = 0;
+                if (currentNode === nextNode) {
+                    newEllipsesIndex = ellipsesIndex + 1;
+                }
+
+                // Recurse over child of durrent node, returns either false or an array
+                reorderedArguments = doParse(nextNode, args, argsIndex+1, newEllipsesIndex);
+
+                if (reorderedArguments) {
+                    // We found a match: reorder arguments on the way down
                     if (argsIndex !== -1) {
-                        reorderedArguments[currentNode.index] = args[argsIndex];
+                        if (currentNode.infinite) {
+                            if (!reorderedArguments[currentNode.index]) {
+                                reorderedArguments[currentNode.index] = [];
+                            }
+                            reorderedArguments[currentNode.index][ellipsesIndex] = args[argsIndex];
+                        } else {
+                            reorderedArguments[currentNode.index] = args[argsIndex];
+                        }
                     }
                     return reorderedArguments;
                 }
@@ -48,6 +63,7 @@ var treeParser = (function () {
 
     var parseTree = function (tree, args) {
 
+        // Special case: when "no arguments" is allowed
         if (args.length === 0 && tree.hasEmptyPath) {
             return [];
         }

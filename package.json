@@ -1,8 +1,8 @@
 {
   "name": "signature",
   "private": true,
-  "description": "",
-  "version": "0.0.2",
+  "description": "Lets you override methods, as well as typecheck its parameters",
+  "version": "0.0.3",
   "author": "Thomas Stehle",
   "scripts": {
     "test": "grunt test"

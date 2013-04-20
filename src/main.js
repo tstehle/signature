@@ -1,21 +1,25 @@
-// TODO: case where no arguments must match any number of optional params
-// TODO: make creation faster by only having all signature() objects not redefine its private methods when created (like they don't redefine their parser); And take treeParser out of the global scope.
-// TODO: add ... and return an array of the elements
-// TODO: a way to catch all, maybe "[...]" will match anything (detect that special case and don't do any check at all?)
 // TODO: order matters, so must use an array of key/value pairs? Messy notation:
 // [{"string": function () {}}, "number", function () {}, {}]
 // Alternative:
 // addHandler("string", function () {}).and("number", function () {})
+// which means the returned method will need to have methods of its own, which add to the array of trees.
+// This would be quite costly is trees must be merged...
 
 // TODO: test if wrapping the matcher in a not() function in the expressionParser is not faster than doing a !matcherResult in treeParser
-// TODO: write tests for all our buildtinmatchers
-// TODO: log unregognized matchers, to help debugging
-// TODO: allow user defined "no match" function. For example in jQuery they would need it to "return this" instead of undefined.
+// This could be the source of much of the recent 10% decrease
 
+// TODO: write tests for each of our buildtinmatchers
+
+// TODO: log unrecognized matchers, to help debugging
+
+// TODO: a way to catch all, maybe "[...]" will match anything (detect that special case and don't do any check at all?)
+// TODO: allow user defined "no match" function. For example in jQuery they would need it to "return this" instead of undefined.
+// NOTE: a catchall responder is the same as a "no match" function.
+// Thus we could ask the user to use "catchall": function () {} or some such.
 
 /*
     A library to grant overriding capabilities to JavaScript functions.
-    All helpers are included here on Build.
+    All ./helpers/*.js are included here on Build.
 */
 
     var root = this;

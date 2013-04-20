@@ -60,11 +60,25 @@ var expressionParser = (function () {
                 parsedExpression.data[i].negator = false;
             }
 
+            // Check for ...
+            if (trimmedExpressionElement.slice(trimmedExpressionElement.length - 3,  trimmedExpressionElement.length) === "...") {
+                trimmedExpressionElement = trimmedExpressionElement.substring(0, trimmedExpressionElement.length - 3);
+                parsedExpression.data[i].infinite = true;
+            } else {
+                parsedExpression.data[i].infinite = false;
+            }
+
+
             // Build
             parsedExpression.data[i].index = i-1;
-            parsedExpression.data[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
+            parsedExpression.data[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers, parsedExpression.data[i].negator);
             parsedExpression.data[i].linksTo = [];
             parsedExpression.data[i].isStartingNode = isTheCurrentNodeAStartingNode;     // ? DO WE USE THIS ?
+
+            if (parsedExpression.data[i].infinite) {
+                parsedExpression.data[i].linksTo.push(parsedExpression.data[i]);
+            }
+
 
             if (isTheCurrentNodeAStartingNode) {
                 parsedExpression.data[0].linksTo.push(parsedExpression.data[i]);
@@ -97,13 +111,13 @@ var expressionParser = (function () {
             parsedExpression.hasEmptyPath = true;
         }
 
-//console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
-//console.log(parsedExpression);
-//console.log(parsedExpression.data[0]);
+console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
+console.log(parsedExpression);
+console.log(parsedExpression.data[0]);
         return parsedExpression;
     };
 
     return parseExpressions;
 }());
 
-
+// TODO: some kinf oF BUG in the starting node, where it has multiple copies of a node

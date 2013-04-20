@@ -1,7 +1,7 @@
 var matchers = (function () {
 
     // Look in user-defined object first, so the User's Matchers can override ours
-    var findByName = function(name, userDefinedMatchers) {
+    var findByName = function(name, userDefinedMatchers, negator) {
         var matcher;
 
         if (typeof userDefinedMatchers === "object") {
@@ -10,6 +10,12 @@ var matchers = (function () {
 
         if (!matcher) {
             matcher = builtinMatchers[name];
+        }
+
+        if (negator) {
+            return function (input) {
+                return !matcher(input);
+            };
         }
 
         return matcher;
@@ -23,14 +29,20 @@ var matchers = (function () {
         'false': function (input) {
             return (input === false);
         },
-        'truthy': function (input) {
+        'undefined': function (input) {
+            return (input === undefined);
+        },
+        'NaN': function (input) {               // TODO: let's try to have consistency between NaN and !number, ok?
+            return isNaN(input);
+        },
+        truthy: function (input) {
             if (input) {
                 return true;
             } else {
                 return false;
             }
         },
-        'falsy': function (input) {
+        falsy: function (input) {
             if (input) {
                 return false;
             } else {
@@ -56,7 +68,7 @@ var matchers = (function () {
 
     // Add aliases
     builtinMatchers["*"] = builtinMatchers.any;
-    builtinMatchers.falsey = builtinMatchers.falsy;
+    builtinMatchers.falsey = builtinMatchers.falsy; // Alternate spelling
 
     return {
         findByName: findByName

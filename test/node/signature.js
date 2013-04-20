@@ -285,3 +285,82 @@ exports.testEmptyExpression= function(test){
 
     test.done();
 };
+
+
+
+
+
+
+
+
+exports["Test jQuery .on lookalike"] = function(test){
+
+    var $ = {
+        on: signature({
+            "!object, [string], [any], function": function(types, selector, data, fn) {
+                return [types, selector, data, typeof fn];
+            },
+            "!object, [string], [any], false": function(types, selector, data) {
+                var fn = function() {return false;};
+                return [types, selector, data, typeof fn];
+            },
+            "object, [string], [any]": function(types, selector, data) {
+                return [types, selector, data];
+            }
+        })
+    };
+
+    test.deepEqual(
+        $.on("selector", "subselector", 3, function () {}),
+        ["selector", "subselector", 3, "function"]
+    );
+
+    test.deepEqual(
+        $.on("selector", "subselector", function () {}),
+        ["selector", "subselector", undefined, "function"]
+    );
+
+    test.done();
+};
+
+
+
+
+exports["Test ..."] = function(test){
+
+    var $ = {
+        on: signature({
+            "!object..., object...": function(notObjects, object) {
+                return [notObjects, object];
+            },
+            "!object..., [object...]": function(notObjects, object) {
+                return [notObjects, object];
+            }
+        })
+    };
+
+    test.deepEqual(
+        $.on("a", "b", 1, {1:1}, {2:2}),
+        [["a", "b", 1], [{1:1}, {2:2}]]
+    );
+
+    test.done();
+};
+
+exports["Test ... Part #2"] = function(test){
+
+    var $ = {
+        on: signature({
+            "!object..., [object...], string": function(notObjects, object, string) {
+                return [notObjects, object, string];
+            }
+        })
+    };
+
+    test.deepEqual(
+        $.on("a", "b", 1, "e"),
+        [["a", "b", 1], undefined, "e"]
+    );
+
+    test.done();
+};
