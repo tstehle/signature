@@ -67,7 +67,7 @@ var matchers = (function () {
     };
 
     // Add aliases
-    builtinMatchers["*"] = builtinMatchers.any;
+    builtinMatchers["?"] = builtinMatchers.any;
     builtinMatchers.falsey = builtinMatchers.falsy; // Alternate spelling
 
     return {

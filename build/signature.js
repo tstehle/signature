@@ -14,7 +14,11 @@ var expressionParser = (function () {
 
         for (expression in expressions) {
             var responder = expressions[expression];
-            parsedExpressions.push(parseExpression(expression, responder, userDefinedMatchers));
+
+            //TEST
+            if (expression !== "*") {
+                parsedExpressions.push(parseExpression(expression, responder, userDefinedMatchers));
+            }
         }
 
         return parsedExpressions;
@@ -211,6 +215,9 @@ var treeParser = (function () {
 
     var doParse = function (currentNode, args, argsIndex, ellipsesIndex) {
 
+
+
+
         if (argsIndex === -1 || currentNode.matcher(args[argsIndex])) {
             var reorderedArguments, i;
 
@@ -333,8 +340,13 @@ var treeParser = (function () {
                 }
             }
 
-            // We did not find a match, we return nothing
-            return undefined;
+            // We did not find a match, we return nothing, or execute the use provided catchall
+            var catchall = responders["*"];
+            if (typeof catchall === "function") {
+                return catchall.apply(this, arguments);
+            } else {
+                return undefined;
+            }
         };
 
         return handler;

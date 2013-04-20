@@ -10,7 +10,11 @@ var expressionParser = (function () {
 
         for (expression in expressions) {
             var responder = expressions[expression];
-            parsedExpressions.push(parseExpression(expression, responder, userDefinedMatchers));
+
+            //TEST
+            if (expression !== "*") {
+                parsedExpressions.push(parseExpression(expression, responder, userDefinedMatchers));
+            }
         }
 
         return parsedExpressions;

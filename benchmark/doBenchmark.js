@@ -84,14 +84,14 @@ var suite = new Benchmark.Suite('Compare speed improvements between versions: Tr
 
 
 
-suite/*.add('signature000', function() {
+suite.add('signature000', function() {
         testSignature000.on("types", function () {});
         testSignature000.on("types", "sel", function () {});
     })
     .add('signature_0_0_1', function() {
         testSignature_0_0_1.on("types", function () {});
         testSignature_0_0_1.on("types", "sel", function () {});
-    })*/
+    })
     .add('signature_0_0_2', function() {
         testSignature_0_0_2.on("types", function () {});
         testSignature_0_0_2.on("types", "sel", function () {});

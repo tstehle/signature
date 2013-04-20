@@ -1,7 +1,7 @@
 {
   "name": "signature",
   "private": true,
-  "description": "Lets you override methods, as well as typecheck its parameters",
+  "description": "Lets you override methods, as well as typecheck parameters",
   "version": "0.0.4",
   "author": "Thomas Stehle",
   "scripts": {
@@ -27,6 +27,7 @@
     "grunt-contrib-concat": "~0.2.0",
     "grunt-contrib-watch": "~0.3.1",
     "benchmark": "~1.0.0",
-    "lodash": "~1.2.0"
+    "lodash": "~1.2.0",
+    "microtime": "~0.3.3"
   }
 }

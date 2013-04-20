@@ -364,3 +364,21 @@ exports["Test ... Part #2"] = function(test){
 
     test.done();
 };
+
+exports["Test catchall"] = function(test){
+
+    var $ = {
+        on: signature({
+            "*": function() {
+                return arguments[3];
+            }
+        })
+    };
+
+    test.deepEqual(
+        $.on("a", "b", 1, "e"),
+        "e"
+    );
+
+    test.done();
+};

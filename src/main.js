@@ -34,6 +34,8 @@
         // Generate Trees out of the Expressions (eg. "number, string") defined by the user.
         var parsedExpressions = expressionParser(responders, matchers);
 
+        var catchall = responders["*"];
+
         // Handler centralises all calls, and finds the proper Responder function to call based on the arguments
         var handler = function () {
             var responder, reorderedArgs, parsedExpression, i;
@@ -49,8 +51,12 @@
                 }
             }
 
-            // We did not find a match, we return nothing
-            return undefined;
+            // We did not find a match, we return nothing, or execute the use provided catchall
+            if (typeof catchall === "function") {
+                return catchall.apply(this, arguments);
+            } else {
+                return undefined;
+            }
         };
 
         return handler;
