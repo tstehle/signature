@@ -1,12 +1,11 @@
 // TODO: order matters, so must use an array of key/value pairs? Messy notation:
 // [{"string": function () {}}, "number", function () {}, {}]
 // Alternative:
-// addHandler("string", function () {}).and("number", function () {})
+// signature("string", function () {}).and("number", function () {})
 // which means the returned method will need to have methods of its own, which add to the array of trees.
 // This would be quite costly is trees must be merged...
 
-// TODO: test if wrapping the matcher in a not() function in the expressionParser is not faster than doing a !matcherResult in treeParser
-// This could be the source of much of the recent 10% decrease
+// TODO: try building the reorderedArgs array on the way up, so we don't have to bother with the ... arrays
 
 // TODO: write tests for each of our buildtinmatchers
 
@@ -15,7 +14,10 @@
 // TODO: a way to catch all, maybe "[...]" will match anything (detect that special case and don't do any check at all?)
 // TODO: allow user defined "no match" function. For example in jQuery they would need it to "return this" instead of undefined.
 // NOTE: a catchall responder is the same as a "no match" function.
-// Thus we could ask the user to use "catchall": function () {} or some such.
+// Thus we could ask the user to use "*": function () {} or some such.
+// When used alone it is a catchall, but we can also use it along with other selectors, like "string, number,
+
+// TODO: should empty "" be a catchall?
 
 /*
     A library to grant overriding capabilities to JavaScript functions.
@@ -30,6 +32,8 @@
 
         // Generate Trees out of the Expressions (eg. "number, string") defined by the user.
         var parsedExpressions = expressionParser(responders, matchers);
+
+        var catchall = responders["*"];
 
         // Handler centralises all calls, and finds the proper Responder function to call based on the arguments
         var handler = function () {
@@ -46,8 +50,12 @@
                 }
             }
 
-            // We did not find a match, we return nothing
-            return undefined;
+            // We did not find a match, we return nothing, or execute the use provided catchall
+            if (typeof catchall === "function") {
+                return catchall.apply(this, arguments);
+            } else {
+                return undefined;
+            }
         };
 
         return handler;

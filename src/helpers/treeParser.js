@@ -1,4 +1,5 @@
 var treeParser = (function () {
+    var __slice = [].slice;
 
     var doParse = function (currentNode, args, argsIndex, ellipsesIndex) {
 
@@ -11,8 +12,7 @@ var treeParser = (function () {
                     // We found the correct path: now reorder arguments on the way down
                     reorderedArguments = [];
                     if (currentNode.infinite) {
-                        reorderedArguments[currentNode.index] = [];
-                        reorderedArguments[currentNode.index][ellipsesIndex] = args[argsIndex];
+                        reorderedArguments[currentNode.index] = __slice.call(args, argsIndex - ellipsesIndex, argsIndex + 1);
                     } else {
                         reorderedArguments[currentNode.index] = args[argsIndex];
                     }
@@ -41,9 +41,9 @@ var treeParser = (function () {
                     if (argsIndex !== -1) {
                         if (currentNode.infinite) {
                             if (!reorderedArguments[currentNode.index]) {
-                                reorderedArguments[currentNode.index] = [];
+                                reorderedArguments[currentNode.index] = __slice.call(args, argsIndex - ellipsesIndex,  argsIndex + 1);
                             }
-                            reorderedArguments[currentNode.index][ellipsesIndex] = args[argsIndex];
+                            //reorderedArguments[currentNode.index][ellipsesIndex] = args[argsIndex];
                         } else {
                             reorderedArguments[currentNode.index] = args[argsIndex];
                         }

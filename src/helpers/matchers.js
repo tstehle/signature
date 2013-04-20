@@ -63,11 +63,14 @@ var matchers = (function () {
         },
         'function': function (input) {
             return (typeof input === "function");
+        },
+        '*': function () {
+            return true;
         }
     };
 
     // Add aliases
-    builtinMatchers["*"] = builtinMatchers.any;
+    builtinMatchers["?"] = builtinMatchers.any;
     builtinMatchers.falsey = builtinMatchers.falsy; // Alternate spelling
 
     return {

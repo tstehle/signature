@@ -10,7 +10,11 @@ var expressionParser = (function () {
 
         for (expression in expressions) {
             var responder = expressions[expression];
-            parsedExpressions.push(parseExpression(expression, responder, userDefinedMatchers));
+
+            // Don't bother parsing if we have a * as it will match anything
+            if (trim(expression) !== "*") {
+                parsedExpressions.push(parseExpression(expression, responder, userDefinedMatchers));
+            }
         }
 
         return parsedExpressions;
@@ -68,6 +72,12 @@ var expressionParser = (function () {
                 parsedExpression.data[i].infinite = false;
             }
 
+            /*  TODO: * used as parts of an expression: what does it even mean? Can't we just do "anyIncludingNullAndUndefined..."?
+            // Check for *
+            if (trimmedExpressionElement === "*") {
+                parsedExpression.data[i].infinite = true;
+            }
+            */
 
             // Build
             parsedExpression.data[i].index = i-1;
@@ -75,21 +85,22 @@ var expressionParser = (function () {
             parsedExpression.data[i].linksTo = [];
             parsedExpression.data[i].isStartingNode = isTheCurrentNodeAStartingNode;     // ? DO WE USE THIS ?
 
+
             if (parsedExpression.data[i].infinite) {
                 parsedExpression.data[i].linksTo.push(parsedExpression.data[i]);
             }
 
-
             if (isTheCurrentNodeAStartingNode) {
-                parsedExpression.data[0].linksTo.push(parsedExpression.data[i]);
+                //parsedExpression.data[0].linksTo.push(parsedExpression.data[i]);  // Unnecessary because done in for loop below
             }
 
+            // Sets value for next run of the loop
             if (!(isTheCurrentNodeAStartingNode && parsedExpression.data[i].optional)) {
                 isTheCurrentNodeAStartingNode = false;
             }
         }//TODO: handle empty string in trimmedExpressionElement
 
-        for (i = 0; i < parsedExpression.data.length - 1; i++) {
+        for (i = 0; i < parsedExpression.data.length - 1; i++) {    // TODO: perhaps put all the cose in this for for loop
             var allChildrenWereOptional = true;
             for (var j = i + 1; j < parsedExpression.data.length; j++) {
                 parsedExpression.data[i].linksTo.push(parsedExpression.data[j]);
@@ -111,9 +122,9 @@ var expressionParser = (function () {
             parsedExpression.hasEmptyPath = true;
         }
 
-console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
-console.log(parsedExpression);
-console.log(parsedExpression.data[0]);
+//console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
+//console.log(parsedExpression);
+//console.log(parsedExpression.data[0]);
         return parsedExpression;
     };
 
