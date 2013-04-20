@@ -63,6 +63,9 @@ var matchers = (function () {
         },
         'function': function (input) {
             return (typeof input === "function");
+        },
+        '*': function () {
+            return true;
         }
     };
 

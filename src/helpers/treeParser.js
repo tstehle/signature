@@ -3,9 +3,6 @@ var treeParser = (function () {
 
     var doParse = function (currentNode, args, argsIndex, ellipsesIndex) {
 
-
-
-
         if (argsIndex === -1 || currentNode.matcher(args[argsIndex])) {
             var reorderedArguments, i;
 
