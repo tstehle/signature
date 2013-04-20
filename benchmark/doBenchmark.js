@@ -1,7 +1,7 @@
 var Benchmark = require('benchmark');
 var _ = require('lodash');
 var signature000 = require("../build/old/signature-0.0.0.js");
-//var signature_0_0_1 = require("../build/old/signature-0.0.1.js");
+var signature_0_0_1 = require("../build/old/signature-0.0.1.js");
 var signature = require("../build/signature.js");
 
 var suite = new Benchmark.Suite('Compare speed improvements between versions: TreeParser', {
@@ -18,6 +18,20 @@ var suite = new Benchmark.Suite('Compare speed improvements between versions: Tr
                     "object, [string], [any]": function(types, selector, data) {
                         //loop
                     }
+                }
+            })
+        };
+
+        testSignature_0_0_1 = {
+            on: signature_0_0_1({
+                "!object, [string], [any], function": function(types, selector, data, fn) {
+                    return [types, selector, data, fn];
+                },
+                "!object, [string], [any], false": function(types, selector, data) {
+                    return [types, selector, data, function() {return false;}];
+                },
+                "object, [string], [any]": function(types, selector, data) {
+                    //loop
                 }
             })
         };
@@ -43,11 +57,11 @@ var suite = new Benchmark.Suite('Compare speed improvements between versions: Tr
 suite.add('signature000', function() {
         testSignature000.on("types", function () {});
     })
+    .add('signature_0_0_1', function() {
+        testSignature_0_0_1.on("types", function () {});
+    })
     .add('signature latest', function() {
         testSignature.on("types", function () {});
-    })
-    .add('signature000', function() {
-        testSignature000.on("types", function () {});
     })
 // add listeners
     .on('cycle', function(event) {

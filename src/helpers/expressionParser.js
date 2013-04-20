@@ -4,7 +4,6 @@ var expressionParser = (function () {
         return string.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ');
     };
 
-
     var parseExpressions = function (expressions, userDefinedMatchers) {
         var parsedExpressions = [];
         var expression;
@@ -24,12 +23,15 @@ var expressionParser = (function () {
             isTheCurrentNodeAStartingNode = true,
             i;
 
-        parsedExpression.data = [];
-        parsedExpression.startingNodes = [];
+        parsedExpression.data = []; //reserve first space in array
+        parsedExpression.data[0] = {
+            linksTo: [],
+            index: -1
+        };
         parsedExpression.responder = responder;
 
-        for (i = 0; i < expressionElements.length; i++) {
-            trimmedExpressionElement = trim(expressionElements[i]);
+        for (i = 1; i < expressionElements.length + 1; i++) {
+            trimmedExpressionElement = trim(expressionElements[i-1]);
 
             //
             if (trimmedExpressionElement === '') {
@@ -59,13 +61,13 @@ var expressionParser = (function () {
             }
 
             // Build
-            parsedExpression.data[i].index = i;
+            parsedExpression.data[i].index = i-1;
             parsedExpression.data[i].matcher = matchers.findByName(trimmedExpressionElement, userDefinedMatchers);
             parsedExpression.data[i].linksTo = [];
             parsedExpression.data[i].isStartingNode = isTheCurrentNodeAStartingNode;     // ? DO WE USE THIS ?
 
             if (isTheCurrentNodeAStartingNode) {
-                parsedExpression.startingNodes.push(parsedExpression.data[i]);
+                parsedExpression.data[0].linksTo.push(parsedExpression.data[i]);
             }
 
             if (!(isTheCurrentNodeAStartingNode && parsedExpression.data[i].optional)) {
@@ -91,12 +93,13 @@ var expressionParser = (function () {
         parsedExpression.data[i].isEndNode = true;
 
         // Detect empty paths
-        if (parsedExpression.data[0].isEndNode && parsedExpression.data[0].isStartingNode && parsedExpression.data[0].optional) {
+        if (parsedExpression.data[1].isEndNode && parsedExpression.data[1].isStartingNode && parsedExpression.data[1].optional) {
             parsedExpression.hasEmptyPath = true;
         }
 
 //console.log("$$$$$ PARSED EXPRESSION IS NOW A TREE $$$$$");
 //console.log(parsedExpression);
+//console.log(parsedExpression.data[0]);
         return parsedExpression;
     };
 

@@ -1,110 +1,58 @@
 var treeParser = (function () {
-    var stack;
-    var argumentsIndex;
-    var nodeLinksToIndexes;
-    var args;
-    var reorderedArgs = [];
-    var startingNodes;
-    var startingNodesIndex;
 
-    var doParse = function (node) {
-        var matcherResult = node.matcher(args[argumentsIndex]);
-        if (node.negator) {
-            matcherResult = !matcherResult;
+    var doParse = function (currentNode, args, argsIndex) {
+        var didMatch;
+
+        if (argsIndex !== -1) {         //TODO: damn that's ugly: make it so matcher already knows to invert the result
+            didMatch = currentNode.matcher(args[argsIndex]);
+            if (currentNode.negator) {
+                didMatch = !didMatch;
+            }
         }
 
-        if (matcherResult) {
-            if (!nodeLinksToIndexes[node.index]) {
-                nodeLinksToIndexes[node.index] = 0;            // init index for current node
+        if (argsIndex === -1 || didMatch) {
+            var reorderedArguments;
+
+            // If we're at the end of the args, we better be in an endNode
+            if(args.length === argsIndex + 1) {
+                if (currentNode.isEndNode) {
+                    // Reorder arguments on the way down
+                    reorderedArguments = [];
+                    reorderedArguments[currentNode.index] = args[argsIndex];
+                    return reorderedArguments;
+                } else {
+                    // Too few arguments to fit: backtrack
+                    return false;
+                }
             }
-//console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- PASS");
-            return nextNode(node);
+
+            for (var i = 0; i < currentNode.linksTo.length; i++) {
+                var nextNode = currentNode.linksTo[i];
+                reorderedArguments = doParse(nextNode, args, argsIndex+1);
+                if (reorderedArguments){
+                    if (argsIndex !== -1) {
+                        reorderedArguments[currentNode.index] = args[argsIndex];
+                    }
+                    return reorderedArguments;
+                }
+            }
+
+            // Went through all children and found no match: backtrack
+            return false;
+
         } else {
-//console.log("doParse of node " + node.index +  " compared to argument " + args[argumentsIndex] + " --- FAIL");
-            return backtrack(node);
+            // No match for current Node: backtrack
+            return false;
         }
     };
 
-    var nextNode = function (node) {
-        reorderedArgs[node.index] = args[argumentsIndex];
+    var parseTree = function (tree, args) {
 
-        var indexNextNode = nodeLinksToIndexes[node.index];
-        var next = node.linksTo[indexNextNode];
-        argumentsIndex++;
-        stack.push(next);
-
-        if (node.isEndNode) {
-            if (argumentsIndex === args.length) {
-                return reorderedArgs;
-            }
-        }
-
-        if (!next) {
-            if (argumentsIndex === args.length) {        //must check whether there are still unaccounted for arguments
-                return reorderedArgs;
-            } else {
-                return false;
-            }
-        }
-
-        nodeLinksToIndexes[next.index] = 0; //
-
-        return doParse(next);
-    };
-
-    var backtrack = function (node) {        //TODO: use nextNode() instead of the second part of this method?
-        stack.pop();
-        reorderedArgs[node.index] = undefined;        // the arg may have been set before so we remove it
-
-        var previousNode = stack[stack.length - 1];
-//console.log("*/*/*/ BACKTRACKING TO PREVIOUS NODE:");
-//console.log(previousNode);
-
-        if (!previousNode) {
-            startingNodesIndex++;
-            var nextStartingNode = startingNodes[startingNodesIndex];
-            if (nextStartingNode !== undefined) {
-                return doParse(nextStartingNode);
-            } else {
-                return false;
-            }
-        }
-
-        nodeLinksToIndexes[previousNode.index] += 1;
-        var next = previousNode.linksTo[nodeLinksToIndexes[previousNode.index]];
-
-        // BUGBUG? should I not add an if (node.isEndNode) here as well?
-        //
-
-        if (!next) {
-            argumentsIndex--;                    // Why does this work?
-            return backtrack(previousNode);
-        }
-
-        nodeLinksToIndexes[next.index] = 0;//
-
-        stack.push(next);
-
-//console.log("*/*/*/ FINDING NEXT NODE:");
-//console.log(next);
-
-        return doParse(next);
-    };
-
-    var parseTree = function (newTree, newArgs) {
-        args = newArgs;
-        argumentsIndex = 0;
-        nodeLinksToIndexes = [];
-        reorderedArgs = [];
-        startingNodes = newTree.startingNodes;
-        startingNodesIndex = 0;
-        stack = [startingNodes[0]];
-
-        if (newArgs.length === 0 && newTree.hasEmptyPath) {
+        if (args.length === 0 && tree.hasEmptyPath) {
             return [];
         }
 
-        return doParse(startingNodes[0]);
+        return doParse(tree.data[0], args, -1);
     };
 
     return parseTree;
